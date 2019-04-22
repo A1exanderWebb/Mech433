@@ -49,10 +49,13 @@ int main(){
     sprintf(m,"Hello World");
     unsigned short x=25;
     unsigned short y=15;
+    double count;
+    double frames;
     //LCDdrawletter('d',150,100,0x0000,0xFC18);
     LCD_print(m,x,y,0x0000,0xFFFF);
     
     int i=0;
+    _CP0_SET_COUNT(0);
     while(i<=100){
         sprintf(m,"Hello World %i %%",i);
         LCD_print(m,x,y,0x0000,0xFFFF);
@@ -62,8 +65,12 @@ int main(){
         LCD_barX(i,x,y+27,0x0000,0xFFFF);
         //LCD_barY(i,x,y+25,0x0000,0xFFFF);
         i++;
-        _CP0_SET_COUNT(0);
+        count=_CP0_GET_COUNT();
         while (_CP0_GET_COUNT()<=1200000){;}
+        frames=1.00/(count/4800000);
+        sprintf(m,"FPS =  %f",frames);
+        LCD_print(m,x,y+50,0x0000,0xFFFF);
+        _CP0_SET_COUNT(0);
     }
     
     
