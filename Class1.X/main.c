@@ -61,9 +61,9 @@ int main() {
     while(1) {
         _CP0_SET_COUNT(0);
         LATAbits.LATA4 = 1;
-        while (_CP0_GET_COUNT()<=120000){;}
+        while (_CP0_GET_COUNT()<=48000){;}
         LATAbits.LATA4 = 0;
-        while (_CP0_GET_COUNT()<=120000){;}
+        while (_CP0_GET_COUNT()<=96000){;}
         while (PORTBbits.RB4 == 0){;}   
     }
 }
