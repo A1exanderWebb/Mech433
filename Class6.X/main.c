@@ -43,7 +43,7 @@ int main(){
     SPI1_init();
     LCD_init();
     LATAbits.LATA4 = 1;
-    LCD_clearScreen(0x7800);
+    LCD_clearScreen(0xFFFF);
  
     char m[100];
     sprintf(m,"Hello World");
@@ -53,7 +53,7 @@ int main(){
     double frames;
     //LCDdrawletter('d',150,100,0x0000,0xFC18);
     LCD_print(m,x,y,0x0000,0xFFFF);
-    
+     while(1) {
     int i=0;
     _CP0_SET_COUNT(0);
     while(i<=100){
@@ -66,13 +66,13 @@ int main(){
         //LCD_barY(i,x,y+25,0x0000,0xFFFF);
         i++;
         count=_CP0_GET_COUNT();
-        while (_CP0_GET_COUNT()<=1200000){;}
-        frames=1.00/(count/4800000);
+        while (_CP0_GET_COUNT()<=2400000){;}
+        frames=1.00/(count/24000000);
         sprintf(m,"FPS =  %f",frames);
         LCD_print(m,x,y+50,0x0000,0xFFFF);
         _CP0_SET_COUNT(0);
     }
-    
+     }
     
     
     while(1) {
