@@ -1,3 +1,5 @@
+#include "i2ccontrol.h"
+#include "i2c_master_noinit.h"
 #include<xc.h>           // processor SFR definitions
 #include<sys/attribs.h>  // __ISR macro
 
@@ -46,24 +48,27 @@ int main() {
 
     // 0 data RAM access wait states
     BMXCONbits.BMXWSDRM = 0x0;
+
     // enable multi vector interrupts
     INTCONbits.MVEC = 0x1;
+
     // disable JTAG to get pins back
     DDPCONbits.JTAGEN = 0;
 
     // do your TRIS and LAT commands here
     TRISAbits.TRISA4 = 0;
-    LATAbits.LATA4 = 1;
     TRISBbits.TRISB4 = 1;
-    ANSELA=0;
+    LATAbits.LATA4 = 1;
+    ANSELBbits.ANSB2 = 0;
+	ANSELBbits.ANSB3 = 0;
+
     __builtin_enable_interrupts();
-    
+    initExpander();
+    char val;
+    setExpander(0,1);
     while(1) {
-        _CP0_SET_COUNT(0);
-        LATAbits.LATA4 = 1;
-        while (_CP0_GET_COUNT()<=12000){;}
-        LATAbits.LATA4 = 0;
-        while (_CP0_GET_COUNT()<=24000){;}
-        while (PORTBbits.RB4 == 0){;}   
+
+        val = (getExpander()>>7);
+        setExpander(0,val);
     }
 }
