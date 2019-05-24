@@ -75,7 +75,7 @@ unsigned short count=0;
 signed short buffer[4]={0,0,0,0};
 signed short buffer_y[4]={0,0,0,0};
 float IIR = 0.0, FIR = 0.0;
-float A1=0.25, A2=0.75, B1 = 0.75;
+float A1=0.37, A2=0.55, A3=0.08, B1 = 0.75;
 // *****************************************************************************
 /* Application Data
   Summary:
@@ -408,7 +408,7 @@ void APP_Tasks(void) {
     buffer_y[0] = IIR;
     
     MAF4 = (buffer[0]+buffer[1]+buffer[2]+buffer[3])/4.0;
-    FIR = A1*buffer[0]+ A2*buffer[1];
+    FIR = A1*buffer[0]+ A2*buffer[1]+A3*buffer[2];
     IIR = A1*buffer[0]+B1*buffer_y[0];
     
     switch (appData.state) {
