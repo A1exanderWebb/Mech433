@@ -65,17 +65,17 @@ uint8_t APP_MAKE_BUFFER_DMA_READY readBuffer[APP_READ_BUFFER_SIZE];
 int len, i = 1;
 int startTime = 0; // to remember the loop time
 
-
-//HW10:
-
 #define LENGTH 14
-
 
 char message[100];
 unsigned char data[LENGTH]; //14
 signed short gX, gY, gZ, aX, aY, aZ;
 unsigned short count=0;
 
+signed short buffer[4]={0,0,0,0};
+signed short buffer_y[4]={0,0,0,0};
+float IIR = 0.0, FIR = 0.0;
+float A1=0.25, A2=0.75, B1 = 0.75;
 // *****************************************************************************
 /* Application Data
   Summary:
@@ -396,6 +396,21 @@ void APP_Tasks(void) {
     int IMUbuffer[7]={count,gX,gY,gZ,aX,aY,aZ};
     count++;
     
+    float MAF4;
+    buffer[3]=buffer[2];
+    buffer[2]=buffer[1];
+    buffer[1]=buffer[0];
+    buffer[0]=aZ;
+        
+    buffer_y[3] = buffer_y[2];
+    buffer_y[2] = buffer_y[1];
+    buffer_y[1] = buffer_y[0];
+    buffer_y[0] = IIR;
+    
+    MAF4 = (buffer[0]+buffer[1]+buffer[2]+buffer[3])/4.0;
+    FIR = A1*buffer[0]+ A2*buffer[1];
+    IIR = A1*buffer[0]+B1*buffer_y[0];
+    
     switch (appData.state) {
         case APP_STATE_INIT:
 
@@ -494,7 +509,7 @@ void APP_Tasks(void) {
             /* PUT THE TEXT YOU WANT TO SEND TO THE COMPUTER IN dataOut
             AND REMEMBER THE NUMBER OF CHARACTERS IN len */
             /* THIS IS WHERE YOU CAN READ YOUR IMU, PRINT TO THE LCD, ETC */
-            len = sprintf(dataOut, "%3d %7d %7d %7d %7d %7d %7d\r\n", i, gX, gY, gZ, aX, aY, aZ);
+            len = sprintf(dataOut, "%3d %7d %7.2f %7.2f %7.2f\r\n", i, aZ, MAF4, FIR, IIR);
             i++; // increment the index so we see a change in the text
             /* IF A LETTER WAS RECEIVED, ECHO IT BACK SO THE USER CAN SEE IT */
             if (appData.isReadComplete) {
